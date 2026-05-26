@@ -40,7 +40,28 @@ class Item(models.Model):
     foto = models.ImageField('Imagem do item encontrado', upload_to ='itens/' ,blank = True, null = True)
     data_encontro = models.DateField('Data em que o item foi encontrado')
     data_criacao = models.DateTimeField(auto_now_add = True)
-    cadastrado_por = models.ForeignKey()
+    
+    cadastrado_por = models.ForeignKey(
+
+        on_delete = models.CASCADE,
+        related_name = "Usuário",
+        verbose_name = "Cadastrado_por",
+
+     )
+    
+class Reivindicacao(models.Model):
+
+    STATUS_REIVINDICACAO = [
+        ('pendente', 'Pendente'),
+        ('aprovada', 'Aprovada'),
+        ('recusada', 'Recusada'),
+
+    ]
+         
+    item = models.CharField("Item_Reivindicação", max_length = 50)
+    descricao_prova = models.TextField()
+    status_Reivindicacao = models.CharField(max_length = 20, choices = STATUS_REIVINDICACAO, default = 'pendente')
+    criado_em = models.DateTimeField(auto_now_add = True)
 
 
 
