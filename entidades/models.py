@@ -33,6 +33,7 @@ class Item(models.Model):
         ]
 
     nome = models.CharField('Nome do item encontrado', max_length = 50)
+    id = models.IntegerField('ID')
     descricao = models.TextField('Descrição do item encontrado')
     local = models.CharField('Local onde o item foi encontrado', max_length = 20, choices = LOCAL_ENCONTRADO)
     situacao_Item = models.CharField(max_length =20, choices = SITUACAO_ITEM)
@@ -59,10 +60,17 @@ class Reivindicacao(models.Model):
 
     ]
          
-    item = models.CharField("Item_Reivindicação", max_length = 50)
+    id = models.IntegerField('ID Reivindicação')
     descricao_prova = models.TextField()
     status_Reivindicacao = models.CharField(max_length = 20, choices = STATUS_REIVINDICACAO, default = 'pendente')
     criado_em = models.DateTimeField(auto_now_add = True)
+
+    item_reivindicado = models.ForeignKey(
+
+        Item,
+        
+
+    )
 
 
 
