@@ -4,9 +4,9 @@ from django.urls import reverse
 class Aluno(models.Model):
 
     usuario = models.CharField('Usuário', max_length = 100, null = False)
-    matricula = models.IntegerField('Matrícula', unique = True, on_delete = models.CASCADE)
+    matricula = models.IntegerField('Matrícula', unique = True)
     curso = models.CharField('Curso' ,max_length = 100)
-    telefone = models.IntegerField('Telefone' ,max_length = 15, unique = True)
+    telefone = models.IntegerField('Telefone', unique = True)
 
 class Item(models.Model):
 
@@ -43,6 +43,7 @@ class Item(models.Model):
     
     cadastrado_por = models.ForeignKey(
 
+        Aluno,
         on_delete = models.CASCADE,
         related_name = "Usuário",
         verbose_name = "Cadastrado_por",
