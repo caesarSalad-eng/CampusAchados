@@ -1,12 +1,29 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 class Aluno(models.Model):
 
-    usuario = models.CharField('Usuário', max_length = 100, null = False)
+    usuario = models.OneToOneField(
+
+        User,
+        on_delete = models.CASCADE,
+        related_name = "Aluno" 
+
+    )
     matricula = models.IntegerField('Matrícula', unique = True)
     curso = models.CharField('Curso' ,max_length = 100)
-    telefone = models.IntegerField('Telefone', unique = True)
+    telefone = models.CharField('Telefone', unique = True, max_length = 15)
+
+
+    class Meta:
+
+        verbose_name = 'Aluno'
+        verbose_name_plural = 'Alunos'
+
+    def __str__(self):
+
+        return f'{self.user.get_full_name()} — {self.matricula}'
 
 class Item(models.Model):
 
@@ -33,7 +50,6 @@ class Item(models.Model):
         ]
 
     nome = models.CharField('Nome do item encontrado', max_length = 50)
-    id = models.IntegerField('ID')
     descricao = models.TextField('Descrição do item encontrado')
     local = models.CharField('Local onde o item foi encontrado', max_length = 20, choices = LOCAL_ENCONTRADO)
     situacao_Item = models.CharField(max_length =20, choices = SITUACAO_ITEM)
@@ -44,12 +60,23 @@ class Item(models.Model):
     
     cadastrado_por = models.ForeignKey(
 
-        Aluno,
+        User,
         on_delete = models.CASCADE,
-        related_name = "Usuário",
+        related_name = "itens",
         verbose_name = "Cadastrado_por",
 
      )
+    
+    class Meta:
+
+        verbose_name = 'Item'
+        verbose_name_plural = 'Itens'
+        ordering = ['-data_criacao']
+
+    
+    def __str__(self):
+
+        return f'[{self.get_situacao_display()}] {self.nome}'
     
 class Reivindicacao(models.Model):
 
@@ -60,19 +87,25 @@ class Reivindicacao(models.Model):
 
     ]
          
-    id = models.IntegerField('ID Reivindicação')
-    descricao_prova = models.TextField()
-    status_Reivindicacao = models.CharField(max_length = 20, choices = STATUS_REIVINDICACAO, default = 'pendente')
+    item = models.OneToOneField(Item, on_delete = models.CASCADE, related_name = 'reivindicacao', verbose_name = 'Item reivindicacao')
+    descricao_prova = models.TextField('Prova que o Item é seu')
+    status_Reivindicacao = models.CharField('Status reivindicacao', max_length = 20, choices = STATUS_REIVINDICACAO, default = 'pendente')
     criado_em = models.DateTimeField(auto_now_add = True)
 
-    item_reivindicado = models.ForeignKey(
+    requerente = models.ForeignKey(
 
-        Item,
-        
+        User,
+        on_delete = models.CASCADE,
+        related_name = 'reivindicacoes',
+        verbose_name = 'Requerente',
 
     )
 
+    class Meta:
 
+        verbose_name = 'Reivindicação'
+        verbose_name_plural = 'Reivindicações'
 
+    def __str__(self):
 
-
+        return f'{self.requerente} → {self.item}'
