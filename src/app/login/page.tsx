@@ -96,7 +96,7 @@ export default function LoginPage() {
                 </form>
                 <p className={styles.sregister}>
                     Não tem uma conta? 
-                    <a href="/signup" className={styles.registerLink}>Cadastre-se
+                    <a href="./cadastro" className={styles.registerLink}>Cadastre-se
                     </a>
                 </p>
             </div>
