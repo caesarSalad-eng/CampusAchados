@@ -1,0 +1,222 @@
+
+export type Status    = "Ativo" | "Reivindicado" | "Resolvido";
+export type Tipo      = "Perdido" | "Encontrado";
+export type Categoria = "Eletrônico" | "Livro/Material" | "Documento" | "Vestuário" | "Outro";
+export type Local     = "Biblioteca" | "Sala de Aula" | "Estacionamento" | "Cantina" | "Outro";
+
+export interface Item {
+  id: number;
+  nome: string;
+  descricao: string;
+  local: Local;
+  data: string;          
+  tipo: Tipo;
+  status: Status;
+  categoria: Categoria;
+  emoji: string;
+  // campos adicionais de cadastro
+  cor?: string;
+  marca?: string;
+  contatoNome?: string;
+  contatoEmail?: string;
+  contatoTelefone?: string;
+  observacoes?: string;
+}
+
+export const ITEMS: Item[] = [
+  {
+    id: 1,
+    nome: "Fone de ouvido preto",
+    descricao: "Fone over-ear sem fio, modelo grande, cor preta com detalhes prateados.",
+    local: "Biblioteca",
+    data: "22/05/2026",
+    tipo: "Encontrado",
+    status: "Ativo",
+    categoria: "Eletrônico",
+    emoji: "🎧",
+    cor: "Preto",
+    marca: "JBL",
+    contatoNome: "Marcos Souza",
+    contatoEmail: "marcos@campus.edu.br",
+    contatoTelefone: "(81) 99999-0001",
+    observacoes: "Encontrado na mesa do fundo, perto da seção de periódicos.",
+  },
+  {
+    id: 2,
+    nome: "Caderno de Cálculo II",
+    descricao: "Caderno universitário 200 folhas, capa dura azul, com anotações de cálculo integral.",
+    local: "Sala de Aula",
+    data: "21/05/2026",
+    tipo: "Perdido",
+    status: "Ativo",
+    categoria: "Livro/Material",
+    emoji: "📓",
+    cor: "Azul",
+    contatoNome: "Beatriz Lima",
+    contatoEmail: "beatriz@campus.edu.br",
+    contatoTelefone: "(81) 99999-0002",
+    observacoes: "Perdido após a aula das 14h na sala 203.",
+  },
+  {
+    id: 3,
+    nome: "Carteira com documentos",
+    descricao: "Carteira de couro marrom com RG, CPF e cartão universitário dentro.",
+    local: "Estacionamento",
+    data: "20/05/2026",
+    tipo: "Encontrado",
+    status: "Reivindicado",
+    categoria: "Documento",
+    emoji: "👜",
+    cor: "Marrom",
+    contatoNome: "Carlos Mendes",
+    contatoEmail: "carlos@campus.edu.br",
+    contatoTelefone: "(81) 99999-0003",
+    observacoes: "Encontrada próxima ao bloco B do estacionamento.",
+  },
+  {
+    id: 4,
+    nome: "Tênis branco nº 40",
+    descricao: "Par de tênis esportivo branco, numeração 40, marca Nike.",
+    local: "Cantina",
+    data: "19/05/2026",
+    tipo: "Encontrado",
+    status: "Ativo",
+    categoria: "Vestuário",
+    emoji: "👟",
+    cor: "Branco",
+    marca: "Nike",
+    contatoNome: "Ana Paula",
+    contatoEmail: "ana@campus.edu.br",
+    contatoTelefone: "(81) 99999-0004",
+    observacoes: "Estava em um saco plástico embaixo de uma das mesas.",
+  },
+  {
+    id: 5,
+    nome: "Carregador USB-C",
+    descricao: "Carregador original USB-C 65W, cabo branco de 1,5m.",
+    local: "Biblioteca",
+    data: "18/05/2026",
+    tipo: "Perdido",
+    status: "Ativo",
+    categoria: "Eletrônico",
+    emoji: "🔌",
+    cor: "Branco",
+    marca: "Samsung",
+    contatoNome: "Diego Ferreira",
+    contatoEmail: "diego@campus.edu.br",
+    contatoTelefone: "(81) 99999-0005",
+  },
+  {
+    id: 6,
+    nome: "Óculos de grau",
+    descricao: "Armação arredondada, cor tartaruga, lentes com grau.",
+    local: "Sala de Aula",
+    data: "17/05/2026",
+    tipo: "Perdido",
+    status: "Ativo",
+    categoria: "Outro",
+    emoji: "🕶️",
+    cor: "Tartaruga",
+    contatoNome: "Juliana Costa",
+    contatoEmail: "juliana@campus.edu.br",
+    contatoTelefone: "(81) 99999-0006",
+    observacoes: "Sala 105, bloco A. Muito importante, uso diário.",
+  },
+  {
+    id: 7,
+    nome: "Mochila azul marinho",
+    descricao: "Mochila grande azul marinho com bolso frontal e lateral para garrafa.",
+    local: "Cantina",
+    data: "16/05/2026",
+    tipo: "Encontrado",
+    status: "Resolvido",
+    categoria: "Outro",
+    emoji: "🎒",
+    cor: "Azul marinho",
+    marca: "Adidas",
+    contatoNome: "Roberto Nunes",
+    contatoEmail: "roberto@campus.edu.br",
+    contatoTelefone: "(81) 99999-0007",
+  },
+  {
+    id: 8,
+    nome: "Livro de Algoritmos",
+    descricao: "Livro Introdução a Algoritmos (CLRS), 3ª edição, capa vermelha.",
+    local: "Biblioteca",
+    data: "15/05/2026",
+    tipo: "Perdido",
+    status: "Ativo",
+    categoria: "Livro/Material",
+    emoji: "📘",
+    cor: "Vermelho",
+    contatoNome: "Fernanda Alves",
+    contatoEmail: "fernanda@campus.edu.br",
+    contatoTelefone: "(81) 99999-0008",
+    observacoes: "Nome escrito na folha de rosto.",
+  },
+  {
+    id: 9,
+    nome: "RG e CPF plastificados",
+    descricao: "Documentos plastificados de uma única pessoa, sem carteira.",
+    local: "Estacionamento",
+    data: "14/05/2026",
+    tipo: "Encontrado",
+    status: "Ativo",
+    categoria: "Documento",
+    emoji: "🪪",
+    contatoNome: "Lucas Barros",
+    contatoEmail: "lucas@campus.edu.br",
+    contatoTelefone: "(81) 99999-0009",
+  },
+  {
+    id: 10,
+    nome: "Garrafa térmica cinza",
+    descricao: "Garrafa 500ml, cor cinza com tampa preta, marca Stanley.",
+    local: "Sala de Aula",
+    data: "13/05/2026",
+    tipo: "Perdido",
+    status: "Ativo",
+    categoria: "Outro",
+    emoji: "🫙",
+    cor: "Cinza",
+    marca: "Stanley",
+    contatoNome: "Tatiane Rocha",
+    contatoEmail: "tatiane@campus.edu.br",
+    contatoTelefone: "(81) 99999-0010",
+  },
+  {
+    id: 11,
+    nome: "Guarda-chuva preto",
+    descricao: "Guarda-chuva dobrável preto com cabo emborrachado.",
+    local: "Biblioteca",
+    data: "12/05/2026",
+    tipo: "Encontrado",
+    status: "Ativo",
+    categoria: "Outro",
+    emoji: "☂️",
+    cor: "Preto",
+    contatoNome: "Paulo Henrique",
+    contatoEmail: "paulo@campus.edu.br",
+    contatoTelefone: "(81) 99999-0011",
+  },
+  {
+    id: 12,
+    nome: "Pen drive 32GB",
+    descricao: "Pen drive Kingston 32GB, cor azul, sem tampa.",
+    local: "Sala de Aula",
+    data: "11/05/2026",
+    tipo: "Perdido",
+    status: "Resolvido",
+    categoria: "Eletrônico",
+    emoji: "💾",
+    cor: "Azul",
+    marca: "Kingston",
+    contatoNome: "Camila Torres",
+    contatoEmail: "camila@campus.edu.br",
+    contatoTelefone: "(81) 99999-0012",
+  },
+];
+
+export function getItemById(id: number): Item | undefined {
+  return ITEMS.find(item => item.id === id);
+}

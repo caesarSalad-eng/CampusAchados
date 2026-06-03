@@ -1,150 +1,155 @@
 "use client";
-import Image from "next/image";
-import styles from "./lista.module.css";
-import { useState } from "react";
 
-type BadgeVariant = "found" | "lost" | "active" | "claimed";
- 
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import styles from "./lista.module.css";
+import Image from "next/image";
+
+type Status   = "Ativo" | "Reivindicado" | "Resolvido";
+type Tipo     = "Perdido" | "Encontrado";
+type Categoria= "Eletrônico" | "Livro/Material" | "Documento" | "Vestuário" | "Outro";
+type Local    = "Biblioteca" | "Sala de Aula" | "Estacionamento" | "Cantina" | "Outro";
+
 interface Item {
   id: number;
-  icon: string;
-  name: string;
-  meta: string;
-  badges: BadgeVariant[];
+  nome: string;
+  local: Local;
+  data: string;
+  tipo: Tipo;
+  status: Status;
+  categoria: Categoria;
+  emoji: string;
 }
- 
-interface Stat {
-  label: string;
-  value: number;
-}
- 
-const STATS: Stat[] = [// Dados de exemplo para estatísticas
-  { label: "Itens perdidos", value: 12 },
-  { label: "Itens encontrados", value: 8 },
-  { label: "Devolvidos", value: 34 },
+
+const ITEMS: Item[] = [
+  { id:1,  nome:"Fone de ouvido preto",      local:"Biblioteca",     data:"22/05/2026", tipo:"Encontrado", status:"Ativo",        categoria:"Eletrônico",     emoji:"🎧" },
+  { id:2,  nome:"Caderno de Cálculo II",      local:"Sala de Aula",   data:"21/05/2026", tipo:"Perdido",    status:"Ativo",        categoria:"Livro/Material", emoji:"📓" },
+  { id:3,  nome:"Carteira com documentos",   local:"Estacionamento", data:"20/05/2026", tipo:"Encontrado", status:"Reivindicado", categoria:"Documento",      emoji:"👜" },
+  { id:4,  nome:"Tênis branco nº 40",        local:"Cantina",        data:"19/05/2026", tipo:"Encontrado", status:"Ativo",        categoria:"Vestuário",      emoji:"👟" },
+  { id:5,  nome:"Carregador USB-C",           local:"Biblioteca",     data:"18/05/2026", tipo:"Perdido",    status:"Ativo",        categoria:"Eletrônico",     emoji:"🔌" },
+  { id:6,  nome:"Óculos de grau",             local:"Sala de Aula",   data:"17/05/2026", tipo:"Perdido",    status:"Ativo",        categoria:"Outro",          emoji:"🕶️" },
+  { id:7,  nome:"Mochila azul marinho",       local:"Cantina",        data:"16/05/2026", tipo:"Encontrado", status:"Resolvido",    categoria:"Outro",          emoji:"🎒" },
+  { id:8,  nome:"Livro de Algoritmos",        local:"Biblioteca",     data:"15/05/2026", tipo:"Perdido",    status:"Ativo",        categoria:"Livro/Material", emoji:"📘" },
+  { id:9,  nome:"RG e CPF plastificados",    local:"Estacionamento", data:"14/05/2026", tipo:"Encontrado", status:"Ativo",        categoria:"Documento",      emoji:"🪪" },
+  { id:10, nome:"Garrafa térmica cinza",     local:"Sala de Aula",   data:"13/05/2026", tipo:"Perdido",    status:"Ativo",        categoria:"Outro",          emoji:"🫙" },
+  { id:11, nome:"Guarda-chuva preto",        local:"Biblioteca",     data:"12/05/2026", tipo:"Encontrado", status:"Ativo",        categoria:"Outro",          emoji:"☂️" },
+  { id:12, nome:"Pen drive 32GB",            local:"Sala de Aula",   data:"11/05/2026", tipo:"Perdido",    status:"Resolvido",    categoria:"Eletrônico",     emoji:"💾" },
 ];
- 
-const ITEMS: Item[] = [// Dados de exemplo para itens perdidos/encontrados
-  {
-    id: 1,
-    icon: "🎧",
-    name: "Fone de ouvido preto",
-    meta: "Encontrado na Biblioteca · hoje às 14h",
-    badges: ["found", "active"],
-  },
-  {
-    id: 2,
-    icon: "📓",
-    name: "Caderno de Cálculo II",
-    meta: "Perdido na Sala 204 · ontem",
-    badges: ["lost", "active"],
-  },
-  {
-    id: 3,
-    icon: "💳",
-    name: "Carteira com documentos",
-    meta: "Encontrado no Estacionamento · há 2 dias",
-    badges: ["found", "claimed"],
-  },
-];
- 
-const badgeClassMap: Record<BadgeVariant, string> = {
-  found: styles.badgeFound,
-  lost: styles.badgeLost,
-  active: styles.badgeActive,
-  claimed: styles.badgeClaimed,
-};
- 
-const badgeLabels: Record<BadgeVariant, string> = {
-  found: "Encontrado",
-  lost: "Perdido",
-  active: "Ativo",
-  claimed: "Reivindicado",
-};
- 
-function Badge({ variant }: { variant: BadgeVariant }) {
+
+export default function CampusAchadosPage() {
+  const [busca,       setBusca]       = useState("");
+  const [filtroTipo,  setFiltroTipo]  = useState<"Todos" | Tipo>("Todos");
+  const [filtroCat,   setFiltroCat]   = useState<"Todas" | Categoria>("Todas");
+  const [filtroLocal, setFiltroLocal] = useState<"Todos" | Local>("Todos");
+  const [aba,         setAba]         = useState<"Todos" | Tipo>("Todos");
+
+  const filtered = useMemo(() => ITEMS.filter((it) => {
+    if (busca       && !it.nome.toLowerCase().includes(busca.toLowerCase())) return false;
+    if (filtroTipo  !== "Todos" && it.tipo      !== filtroTipo)  return false;
+    if (filtroCat   !== "Todas" && it.categoria !== filtroCat)   return false;
+    if (filtroLocal !== "Todos" && it.local     !== filtroLocal) return false;
+    if (aba         !== "Todos" && it.tipo      !== aba)         return false;
+    return true;
+  }), [busca, filtroTipo, filtroCat, filtroLocal, aba]);
+
+  const perdidos    = ITEMS.filter(i => i.tipo === "Perdido").length;
+  const encontrados = ITEMS.filter(i => i.tipo === "Encontrado").length;
+
   return (
-    <span className={`${styles.badge} ${badgeClassMap[variant]}`}>
-      {badgeLabels[variant]}
-    </span>
-  );
-}
- 
-function StatCard({ label, value }: Stat) {
-  return (
-    <div className={styles.statCard}>
-      <p className={styles.statLabel}>{label}</p>
-      <p className={styles.statValue}>{value}</p>
-    </div>
-  );
-}
- 
-function ItemCard({ item }: { item: Item }) {
-  return (
-    <div className={styles.itemCard}>
-      <div className={styles.itemIcon}>{item.icon}</div>
-      <div className={styles.itemInfo}>
-        <p className={styles.itemName}>{item.name}</p>
-        <p className={styles.itemMeta}>{item.meta}</p>
-        <div className={styles.badges}>
-          {item.badges.map((b) => (
-            <Badge key={b} variant={b} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
- 
-export default function Lista() {
-  const [showAlert, setShowAlert] = useState(true);
- 
-  return (
-    <div className={styles.app}>
-      <nav className={styles.navbar}>
-        <div className={styles.logo}>
-          <Image className={styles.logoImg}
-    src="/logo.png"
-    alt="Logo CampusAchados"
-    width={74}
-    height={74}
-    quality={1080}
-  />
-          <span>CampusAchados</span>
+    <main className={styles.root}>
+      <div className={styles.container}>
+
+        {/* Header */}
+        <header className={styles.header}>
+          <div className={styles.brand}>
+            <Image className={styles.logoImg}
+                                 src="/logo.png"
+                                alt="Logo CampusAchados"
+                                width={192}
+                                height={192}
+                                quality={1080}
+                        />
+            <span className={styles.brandName}>CampusAchados</span>
           </div>
-        <div className={styles.navButtons}>
-          <button className={styles.navBtn}>Itens</button>
-          <button className={styles.navBtnPrimary}>+ Cadastrar</button>
-          <button className={styles.navBtn}>👤 João</button>
-        </div>
-      </nav>
- 
-      <div className={styles.content}>
-        {showAlert && (
-          <div className={styles.alert}>
-            <span className={styles.alertText}>✓ Bem-vindo(a) de volta, João!</span>
-            <button className={styles.alertClose} onClick={() => setShowAlert(false)}>
-              ×
-            </button>
+          <button className={styles.btnCadastrar}>+ Cadastrar</button>
+        </header>
+
+        {/* Body */}
+        <section className={styles.body}>
+          <div className={styles.sectionTitle}>
+            <h2 className={styles.heading}>Itens</h2>
+            <span className={styles.count}>{filtered.length} registros encontrados</span>
           </div>
-        )}
- 
-        <h2 className={styles.greeting}>Olá, João!</h2>
-        <p className={styles.greetingSub}>Veja o que está acontecendo no campus</p>
- 
-        <div className={styles.stats}>
-          {STATS.map((s) => (
-            <StatCard key={s.label} {...s} />
-          ))}
-        </div>
- 
-        <p className={styles.sectionTitle}>Adicionados recentemente</p>
-        <div className={styles.itemsList}>
-          {ITEMS.map((item) => (
-            <ItemCard key={item.id} item={item} />
-          ))}
-        </div>
+
+          {/* Filters */}
+          <div className={styles.filters}>
+            <input
+              type="text"
+              placeholder="Buscar por nome..."
+              value={busca}
+              onChange={e => setBusca(e.target.value)}
+              className={styles.searchInput}
+            />
+            <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value as "Todos" | Tipo)} className={styles.select}>
+              <option value="Todos">Todos os tipos</option>
+              <option value="Perdido">Perdido</option>
+              <option value="Encontrado">Encontrado</option>
+            </select>
+            <select value={filtroCat} onChange={e => setFiltroCat(e.target.value as "Todas" | Categoria)} className={styles.select}>
+              <option value="Todas">Todas as categorias</option>
+              <option value="Eletrônico">Eletrônico</option>
+              <option value="Livro/Material">Livro/Material</option>
+              <option value="Documento">Documento</option>
+              <option value="Vestuário">Vestuário</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <select value={filtroLocal} onChange={e => setFiltroLocal(e.target.value as "Todos" | Local)} className={styles.select}>
+              <option value="Todos">Todos os locais</option>
+              <option value="Biblioteca">Biblioteca</option>
+              <option value="Sala de Aula">Sala de Aula</option>
+              <option value="Estacionamento">Estacionamento</option>
+              <option value="Cantina">Cantina</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+
+          {/* Tabs */}
+          <div className={styles.tabs}>
+            {(["Todos", "Perdido", "Encontrado"] as const).map((t) => {
+              const label = t === "Todos" ? "Todos" : t === "Perdido" ? "Perdidos" : "Encontrados";
+              const count = t === "Todos" ? ITEMS.length : t === "Perdido" ? perdidos : encontrados;
+              return (
+                <button key={t} onClick={() => setAba(t)} className={`${styles.tab} ${aba === t ? styles.tabActive : ""}`}>
+                  {label} <span className={styles.tabCount}>({count})</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* List */}
+          <ul className={styles.list}>
+            {filtered.length === 0 && <li className={styles.empty}>Nenhum item encontrado.</li>}
+            {filtered.map((item, i) => (
+              <li key={item.id} style={{ animationDelay: `${i * 45}ms` }}>
+                <Link href={`/itemInfo/${item.id}`} className={styles.card}>
+                  <div className={styles.cardIcon}>{item.emoji}</div>
+                  <div className={styles.cardInfo}>
+                    <span className={styles.cardNome}>{item.nome}</span>
+                    <span className={styles.cardMeta}>{item.local} · {item.data}</span>
+                    <div className={styles.tags}>
+                      <span className={`${styles.tag} ${item.tipo === "Encontrado" ? styles.tagEncontrado : styles.tagPerdido}`}>{item.tipo}</span>
+                      <span className={`${styles.tag} ${item.status === "Ativo" ? styles.tagAtivo : item.status === "Reivindicado" ? styles.tagReivindicado : styles.tagResolvido}`}>{item.status}</span>
+                      <span className={`${styles.tag} ${styles.tagCategoria}`}>{item.categoria}</span>
+                    </div>
+                  </div>
+                  <span className={styles.cardBtn} aria-hidden="true">›</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
       </div>
-    </div>
+    </main>
   );
 }
