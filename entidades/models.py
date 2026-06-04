@@ -23,7 +23,7 @@ class Aluno(models.Model):
 
     def __str__(self):
 
-        return f'{self.user.get_full_name()} — {self.matricula}'
+        return f'{self.usuario.get_full_name()} — {self.matricula}'
 
 class Item(models.Model):
 
