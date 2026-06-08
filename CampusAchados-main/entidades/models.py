@@ -11,7 +11,7 @@ class Aluno(models.Model):
         related_name = "Aluno" 
 
     )
-    matricula = models.IntegerField('Matrícula', unique = True)
+    matricula = models.IntegerField('Matrícula', unique=True, null=True, blank=True)
     curso = models.CharField('Curso' ,max_length = 100)
     telefone = models.CharField('Telefone', unique = True, max_length = 15)
 
@@ -24,6 +24,8 @@ class Aluno(models.Model):
     def __str__(self):
 
         return f'{self.usuario.get_full_name()} — {self.matricula}'
+    avatar = models.CharField('Avatar', max_length=10, default='🧑‍💻')
+    bio    = models.TextField('Bio', blank=True, default='')
 
 class Item(models.Model):
 

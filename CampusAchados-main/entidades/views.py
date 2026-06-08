@@ -6,10 +6,22 @@ from django.contrib import messages
 from .forms import ItemForm, ReivindicacaoForm
 from django.contrib.auth.decorators import login_required
 
+CURSOS = [
+    "Ciência da Computação", "Engenharia de Software",
+    "Sistemas de Informação", "Engenharia Elétrica",
+    "Engenharia Civil", "Administração", "Matemática", "Física", "Outro",
+]
+
+
 def home(request):
     itens_perdidos = Item.objects.filter(status_Item='ativo')[:6]
-    contexto = {'itens_perdidos': itens_perdidos}
-    return render(request, 'entidades/home.html', contexto)
+    aluno = None
+    if request.user.is_authenticated:
+        aluno = Aluno.objects.filter(usuario=request.user).first()
+    return render(request, 'entidades/home.html', {
+        'itens_perdidos': itens_perdidos,
+        'aluno': aluno,
+    })
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -147,6 +159,54 @@ def reivindicar_item(request, pk):
 
     return render(request, 'entidades/reivindicar.html', {'form': form, 'item': item})
 from django.contrib.auth.forms import UserCreationForm
+
+@login_required
+def perfil_view(request):
+    try:
+        aluno = Aluno.objects.get(usuario=request.user)
+    except Aluno.DoesNotExist:
+        aluno = None  
+
+    
+    if request.method == 'POST':
+        nome      = request.POST.get('nome', '').strip()
+        email     = request.POST.get('email', '')
+        telefone  = request.POST.get('telefone', '')
+        matricula = request.POST.get('matricula', '')
+        curso     = request.POST.get('curso', '')
+        avatar    = request.POST.get('avatar', '🧑‍💻')
+        bio       = request.POST.get('bio', '')
+
+        # Validação server-side
+        erros = False
+        if not nome:             messages.error(request, 'Nome obrigatório.'); erros = True
+        if '@' not in email:     messages.error(request, 'E-mail inválido.'); erros = True
+        if not matricula:        messages.error(request, 'Matrícula obrigatória.'); erros = True
+
+        if not erros:
+            partes = nome.split()
+            request.user.first_name = partes[0]
+            request.user.last_name  = ' '.join(partes[1:])
+            request.user.email      = email
+            request.user.save()
+
+            if aluno is None:
+                aluno = Aluno(usuario=request.user)
+
+            aluno.telefone  = telefone
+            aluno.matricula = matricula
+            aluno.curso     = curso
+            aluno.avatar    = avatar
+            aluno.bio       = bio
+            aluno.save()
+
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('entidades:perfil')
+
+    return render(request, 'entidades/perfil.html', {
+        'aluno': aluno,
+        'cursos': CURSOS,
+    })
 
 def cadastro_view(request):
     if request.user.is_authenticated:

@@ -32,11 +32,15 @@
       <nav class="nav">
         <a href="{% url 'entidades:lista_itens' %}" class="nav-link">Itens</a>
         {% if user.is_authenticated %}
-          <a href="{% url 'entidades:cadastrar_item' %}" class="btn-cadastrar">+ Cadastrar</a>
-          <a href="{% url 'entidades:logout' %}" class="nav-link">Sair</a>
-        {% else %}
-          <a href="{% url 'entidades:login' %}" class="btn-cadastrar">Entrar</a>
-        {% endif %}
+  <a href="{% url 'entidades:cadastrar_item' %}" class="btn-cadastrar">+ Cadastrar</a>
+  <a href="{% url 'entidades:perfil' %}" class="header-perfil-btn" title="{{ user.get_full_name|default:user.username }}">
+    <span class="header-perfil-av">{{ aluno.avatar|default:"🧑‍💻" }}</span>
+    <span class="header-perfil-nome">{{ user.first_name|default:user.username }}</span>
+  </a>
+  <a href="{% url 'entidades:logout' %}" class="nav-link">Sair</a>
+{% else %}
+  <a href="{% url 'entidades:login' %}" class="btn-cadastrar">Entrar</a>
+{% endif %}
       </nav>
     </header>
     {% endblock %}
