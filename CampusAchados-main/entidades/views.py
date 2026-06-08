@@ -5,6 +5,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import ItemForm, ReivindicacaoForm
 from django.contrib.auth.decorators import login_required
+import json
+import anthropic
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 
 CURSOS = [
     "Ciência da Computação", "Engenharia de Software",
@@ -87,6 +94,7 @@ def cadastrar_item(request):
             messages.success(request, 'Item cadastrado com sucesso')
             return redirect('entidades:detalhe_item', pk=item.pk)
         else:
+            print("ERROS DO FORM:", forms.errors)
             messages.error(request, 'Dados inválidos. Tente novamente')
     else:
         forms = ItemForm()
@@ -241,3 +249,39 @@ def cadastro_view(request):
                 return redirect('entidades:home')
 
     return render(request, 'entidades/cadastro.html')
+
+@require_POST
+def chatbot_view(request):
+    try:
+        data = json.loads(request.body)
+        historico = data.get('historico', [])
+        mensagem = data.get('mensagem', '').strip()
+
+        if not mensagem:
+            return JsonResponse({'erro': 'Mensagem vazia'}, status=400)
+
+        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+
+        system_prompt = """Você é o assistente virtual do CampusAchados, 
+        um sistema universitário de itens perdidos e achados. 
+        Ajude os usuários com dúvidas sobre:
+        - Como cadastrar um item encontrado
+        - Como reivindicar um item perdido
+        - Como funciona o processo de confirmação
+        - Dúvidas gerais sobre o sistema
+        Seja simpático, objetivo e fale em português brasileiro."""
+
+        mensagens = historico + [{"role": "user", "content": mensagem}]
+
+        resposta = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            system=system_prompt,
+            messages=mensagens,
+        )
+
+        texto = resposta.content[0].text
+        return JsonResponse({'resposta': texto})
+
+    except Exception as e:
+        return JsonResponse({'erro': str(e)}, status=500)

@@ -17,6 +17,8 @@
     <div class="detalhe-icon">
       {% if item.foto %}
         <img src="{{ item.foto.url }}" alt="{{ item.nome }}" class="detalhe-foto" />
+      {% elif item.icone %}
+        <span class="detalhe-icone"><i class="fa-solid {{ item.icone }}"></i></span>
       {% else %}
         <span class="detalhe-emoji">{% if item.situacao_Item == 'perdido' %}🔍{% else %}📦{% endif %}</span>
       {% endif %}

@@ -27,6 +27,7 @@
             <span class="field-error">{{ erro }}</span>
           {% endfor %}
         </div>
+      
 
         <div class="field {% if forms.data_encontro.errors %}field-has-error{% endif %}">
           <label for="{{ forms.data_encontro.id_for_label }}">Data do encontro</label>
@@ -70,7 +71,28 @@
           <span class="field-error">{{ erro }}</span>
         {% endfor %}
       </div>
+        <!-- Seletor de ícone -->
+<div class="field {% if forms.icone.errors %}field-has-error{% endif %}">
+  <label>Ícone do item</label>
 
+  <div class="icone-grid">
+    {% for valor, label in forms.icone.field.choices %}
+      <button type="button"
+              class="icone-card"
+              data-valor="{{ valor }}"
+              onclick="selecionarIcone(this)">
+        <i class="fa-solid {{ valor }}"></i>
+        <span>{{ label }}</span>
+      </button>
+    {% endfor %}
+  </div>
+
+  {{ forms.icone }}
+
+  {% for erro in forms.icone.errors %}
+    <span class="field-error">{{ erro }}</span>
+  {% endfor %}
+</div>
       <div class="field {% if forms.foto.errors %}field-has-error{% endif %}">
         <label for="{{ forms.foto.id_for_label }}">Foto do item (opcional)</label>
         {{ forms.foto }}
@@ -87,4 +109,28 @@
     </form>
   </div>
 </div>
+<script>
+  function selecionarIcone(btn) {
+    document.querySelectorAll('.icone-card').forEach(c => c.classList.remove('selecionado'));
+    btn.classList.add('selecionado');
+    document.getElementById('id_icone').value = btn.dataset.valor;
+    console.log('icone selecionado:', btn.dataset.valor);
+  }
+
+  // Inicializa sem sobrescrever após clique
+  const inputIcone = document.getElementById('id_icone');
+  if (inputIcone) {
+    const atual = inputIcone.value;
+    if (atual) {
+      const btn = document.querySelector(`.icone-card[data-valor="${atual}"]`);
+      if (btn) btn.classList.add('selecionado');
+    } else {
+      const primeiro = document.querySelector('.icone-card');
+      if (primeiro) {
+        primeiro.classList.add('selecionado');
+        inputIcone.value = primeiro.dataset.valor;
+      }
+    }
+  }
+</script>
 {% endblock %}

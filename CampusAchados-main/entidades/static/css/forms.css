@@ -29,6 +29,7 @@
   margin-top: 0.15rem;
 }
 
+
 /* Resumo item na reivindicação */
 .reiv-item-resumo {
   display: flex;
@@ -93,4 +94,56 @@
 @media (max-width: 540px) {
   .form-actions { flex-direction: column-reverse; }
   .form-actions .btn { width: 100%; }
+}
+
+.icone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.icone-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 0.5rem;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.55);
+  transition: all 0.15s ease;
+}
+
+.icone-card i {
+  font-size: 1.5rem;
+  color: rgba(255,255,255,0.4);
+  transition: color 0.15s ease;
+}
+
+.icone-card:hover {
+  border-color: #7c5cfc;
+  background: rgba(124,92,252,0.12);
+  color: rgba(255,255,255,0.9);
+}
+
+.icone-card:hover i {
+  color: #a78bfa;
+}
+
+.icone-card.selecionado {
+  border-color: #7c5cfc;
+  background: rgba(124,92,252,0.2);
+  color: #c4b5fd;
+}
+
+.icone-card.selecionado i {
+  color: #a78bfa;
+}
+
+.field-has-error .icone-grid .icone-card {
+  border-color: rgba(255,80,80,0.4);
 }

@@ -330,3 +330,5 @@ body {
   .grid-2 { grid-template-columns: 1fr; }
   .main-header { flex-wrap: wrap; gap: 0.6rem; }
 }
+
+

@@ -15,4 +15,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('cadastro/', views.cadastro_view, name='cadastro'),
     path('perfil/', views.perfil_view, name='perfil'),
+    path('chatbot/', views.chatbot_view, name='chatbot'),
 ]

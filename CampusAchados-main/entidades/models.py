@@ -65,11 +65,11 @@ class Item(models.Model):
     descricao = models.TextField('Descrição do item encontrado')
     local = models.CharField('Local onde o item foi encontrado', max_length = 20, choices = LOCAL_ENCONTRADO)
     situacao_Item = models.CharField(max_length =20, choices = SITUACAO_ITEM)
-    status_Item = models.CharField(max_length = 20, choices = STATUS_ITEM)
+    status_Item = models.CharField(max_length=20, choices=STATUS_ITEM, default='ativo')
     foto = models.ImageField('Imagem do item encontrado', upload_to ='itens/' ,blank = True, null = True)
     data_encontro = models.DateField('Data em que o item foi encontrado')
     data_criacao = models.DateTimeField(auto_now_add = True)
-    icone = models.CharField('Ícone do item', max_length = 50, choices = ICONE_CHOICES, default = 'fa-box')
+    icone = models.CharField('Ícone do item', max_length = 50, choices = ICONE_CHOICES, default = 'fa-laptop')
 
     cadastrado_por = models.ForeignKey(
 
