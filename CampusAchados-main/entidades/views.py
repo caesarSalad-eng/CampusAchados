@@ -305,72 +305,148 @@ def chatbot_view(request):
 
 
 def encontrar_resposta(mensagem):
-    respostas = [
+    from fuzzywuzzy import fuzz
+
+    base_conhecimento = [
         {
-            'palavras': ['cadastrar', 'cadastro', 'registrar', 'adicionar item', 'novo item'],
+            'perguntas': [
+                'como cadastrar um item',
+                'quero cadastrar um item',
+                'como registrar um item encontrado',
+                'como adicionar um item',
+                'cadastrar item novo',
+            ],
             'resposta': '📝 Para cadastrar um item, clique em "+ Cadastrar" no menu superior. Preencha o nome, descrição, local onde foi encontrado e uma foto (opcional). Após salvar, o item ficará visível para todos os usuários.'
         },
         {
-            'palavras': ['reivindicar', 'reivindicação', 'reclamar', 'é meu', 'pertence'],
-            'resposta': '🙋 Para reivindicar um item, acesse a página do item e clique em "Reivindicar". Você precisará descrever uma prova de que o item é seu. O responsável pelo cadastro será notificado e poderá aprovar ou recusar.'
+            'perguntas': [
+                'como reivindicar um item',
+                'quero reivindicar um item',
+                'como pegar um item perdido',
+                'como solicitar devolução',
+                'o item é meu como faço',
+            ],
+            'resposta': '🙋 Para reivindicar um item, acesse a página do item e clique em "Reivindicar". Você precisará descrever uma prova de que o item é seu. O responsável pelo cadastro poderá aprovar ou recusar.'
         },
         {
-            'palavras': ['perdido', 'perdi', 'perda', 'sumiço', 'sumiu'],
-            'resposta': '🔍 Se você perdeu um item, acesse a lista de itens e use os filtros de busca para encontrá-lo. Você pode filtrar por nome, local e situação. Se encontrar o seu, clique em "Reivindicar".'
+            'perguntas': [
+                'perdi um item',
+                'como achar meu item perdido',
+                'como buscar item perdido',
+                'procurar item no campus',
+                'sumiço de item',
+            ],
+            'resposta': '🔍 Acesse a lista de itens e use os filtros de busca por nome, local e situação. Se encontrar o seu item, clique em "Reivindicar" para solicitar a devolução.'
         },
         {
-            'palavras': ['encontrado', 'achei', 'encontrei', 'achar'],
-            'resposta': '✅ Ótimo! Se você encontrou um item, clique em "+ Cadastrar" e selecione a situação como "Encontrado". Descreva o item e o local onde foi achado para que o dono possa identificá-lo.'
+            'perguntas': [
+                'encontrei um item',
+                'achei um objeto no campus',
+                'quero devolver item encontrado',
+                'como reportar item achado',
+            ],
+            'resposta': '✅ Que ótimo! Clique em "+ Cadastrar" e selecione a situação como "Encontrado". Descreva o item e o local onde foi achado para que o dono possa identificá-lo.'
         },
         {
-            'palavras': ['status', 'situação', 'ativo', 'entregue', 'reivindicado'],
-            'resposta': '📊 Os itens possuem 3 status:\n• Ativo: disponível, aguardando dono\n• Reivindicado: alguém solicitou o item\n• Entregue: item devolvido ao dono'
+            'perguntas': [
+                'quais os status do item',
+                'o que significa ativo',
+                'o que significa reivindicado',
+                'o que significa entregue',
+                'situação do item',
+            ],
+            'resposta': '📊 Os itens possuem 3 status:\n• Ativo: disponível, aguardando o dono\n• Reivindicado: alguém solicitou o item\n• Entregue: item devolvido ao dono'
         },
         {
-            'palavras': ['aprovar', 'aprovação', 'confirmar', 'confirmação', 'recusar'],
+            'perguntas': [
+                'como aprovar reivindicação',
+                'como confirmar entrega',
+                'como recusar reivindicação',
+                'aprovar ou recusar pedido',
+            ],
             'resposta': '✔️ Quem cadastrou o item pode aprovar ou recusar uma reivindicação. Acesse o item e analise a prova enviada pelo requerente antes de decidir.'
         },
         {
-            'palavras': ['conta', 'cadastro', 'criar conta', 'registrar', 'entrar', 'login', 'senha'],
-            'resposta': '👤 Para criar uma conta, clique em "Entrar" e depois em "Criar conta". Use seu e-mail e uma senha com pelo menos 8 caracteres. Para entrar, use seu e-mail e senha cadastrados.'
+            'perguntas': [
+                'como criar uma conta',
+                'como me cadastrar no site',
+                'como fazer login',
+                'esqueci minha senha',
+                'como entrar no sistema',
+            ],
+            'resposta': '👤 Para criar uma conta clique em "Entrar" e depois em "Criar conta". Use seu e-mail e uma senha com pelo menos 8 caracteres. Para entrar, use seu e-mail e senha cadastrados.'
         },
         {
-            'palavras': ['perfil', 'avatar', 'foto perfil', 'editar perfil', 'meus dados'],
-            'resposta': '⚙️ Para editar seu perfil, clique no seu nome no menu superior. Lá você pode alterar seu nome, e-mail, matrícula, curso e escolher um avatar emoji.'
+            'perguntas': [
+                'como editar meu perfil',
+                'como mudar meu avatar',
+                'como atualizar meus dados',
+                'onde fica meu perfil',
+                'como alterar meu nome',
+            ],
+            'resposta': '⚙️ Para editar seu perfil, clique no seu nome no menu superior. Lá você pode alterar nome, e-mail, matrícula, curso e escolher um avatar emoji.'
         },
         {
-            'palavras': ['local', 'onde', 'biblioteca', 'cantina', 'laboratorio', 'sala', 'estacionamento', 'banheiro'],
-            'resposta': '📍 Os locais disponíveis são: Biblioteca, Cantina, Laboratório, Sala de Aula, Estacionamento, Banheiro e Outro. Escolha o local correto ao cadastrar um item para facilitar a busca.'
+            'perguntas': [
+                'como editar um item',
+                'como alterar informações do item',
+                'modificar item cadastrado',
+            ],
+            'resposta': '✏️ Você pode editar apenas os itens que cadastrou. Acesse o item e clique em "Editar" para modificar as informações.'
         },
         {
-            'palavras': ['foto', 'imagem', 'fotografia', 'upload'],
-            'resposta': '📷 A foto do item é opcional, mas ajuda muito na identificação! Você pode adicionar uma imagem ao cadastrar ou editar um item.'
-        },
-        {
-            'palavras': ['editar', 'alterar', 'modificar', 'atualizar item'],
-            'resposta': '✏️ Você pode editar apenas os itens que você mesmo cadastrou. Acesse o item e clique em "Editar" para modificar as informações.'
-        },
-        {
-            'palavras': ['excluir', 'deletar', 'apagar', 'remover item'],
+            'perguntas': [
+                'como excluir um item',
+                'como deletar um item',
+                'remover item cadastrado',
+                'apagar item',
+            ],
             'resposta': '🗑️ Você pode excluir apenas os itens que cadastrou. Acesse o item e clique em "Excluir". Essa ação não pode ser desfeita.'
         },
         {
-            'palavras': ['olá', 'ola', 'oi', 'bom dia', 'boa tarde', 'boa noite', 'hey', 'hello'],
-            'resposta': '👋 Olá! Sou o assistente do CampusAchados. Posso te ajudar com dúvidas sobre como cadastrar itens, reivindicar, editar perfil e muito mais. O que você precisa?'
+            'perguntas': [
+                'olá',
+                'oi',
+                'bom dia',
+                'boa tarde',
+                'boa noite',
+                'hello',
+                'hey',
+            ],
+            'resposta': '👋 Olá! Sou o assistente do CampusAchados. Posso te ajudar com dúvidas sobre cadastrar itens, reivindicar, editar perfil e muito mais. O que você precisa?'
         },
         {
-            'palavras': ['obrigado', 'obrigada', 'valeu', 'thanks', 'agradeço'],
-            'resposta': '😊 De nada! Se tiver mais alguma dúvida, é só perguntar!'
+            'perguntas': [
+                'obrigado',
+                'obrigada',
+                'valeu',
+                'muito obrigado',
+                'agradeço',
+            ],
+            'resposta': '😊 De nada! Se tiver mais alguma dúvida é só perguntar!'
         },
         {
-            'palavras': ['ajuda', 'help', 'como funciona', 'o que é', 'campusachados'],
+            'perguntas': [
+                'como funciona o site',
+                'o que é o campusachados',
+                'para que serve esse sistema',
+                'me explica o sistema',
+            ],
             'resposta': '🎓 O CampusAchados é um sistema para registrar e encontrar itens perdidos no campus. Você pode cadastrar itens que encontrou, buscar itens que perdeu e reivindicar a devolução. Use o menu superior para navegar!'
         },
     ]
 
-    for item in respostas:
-        for palavra in item['palavras']:
-            if palavra in mensagem:
-                return item['resposta']
+    melhor_score = 0
+    melhor_resposta = None
+
+    for item in base_conhecimento:
+        for pergunta in item['perguntas']:
+            score = fuzz.partial_ratio(mensagem, pergunta)
+            if score > melhor_score:
+                melhor_score = score
+                melhor_resposta = item['resposta']
+
+    if melhor_score >= 55:
+        return melhor_resposta
 
     return '🤔 Não entendi bem sua dúvida. Tente perguntar sobre: cadastrar item, reivindicar, status, perfil, login ou como funciona o site.'
