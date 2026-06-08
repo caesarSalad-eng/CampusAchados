@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}CampusAchados{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  {% if messages %}
+    <div class="toast-container">
+      {% for message in messages %}
+        <div class="toast toast--{{ message.tags }}">
+          {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✕{% else %}ℹ{% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="page-root">
+
+    {% block header %}
+    <header class="main-header">
+      <a href="{% url 'entidades:home' %}" class="brand">
+        <span class="brand-icon">🔍</span>
+        <span class="brand-name">CampusAchados</span>
+      </a>
+      <nav class="nav">
+        <a href="{% url 'entidades:lista_itens' %}" class="nav-link">Itens</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'entidades:cadastrar_item' %}" class="btn-cadastrar">+ Cadastrar</a>
+          <a href="{% url 'entidades:logout' %}" class="nav-link">Sair</a>
+        {% else %}
+          <a href="{% url 'entidades:login' %}" class="btn-cadastrar">Entrar</a>
+        {% endif %}
+      </nav>
+    </header>
+    {% endblock %}
+
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  <script>
+    // Auto-dismiss toasts
+    document.querySelectorAll('.toast').forEach(function(t) {
+      setTimeout(function() {
+        t.style.animation = 'toastOut 0.3s ease forwards';
+        setTimeout(function() { t.remove(); }, 300);
+      }, 3500);
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
