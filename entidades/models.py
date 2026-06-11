@@ -11,7 +11,7 @@ class Aluno(models.Model):
         related_name = "Aluno" 
 
     )
-    matricula = models.IntegerField('Matrícula', unique = True)
+    matricula = models.IntegerField('Matrícula', unique=True, null=True, blank=True)
     curso = models.CharField('Curso' ,max_length = 100)
     telefone = models.CharField('Telefone', unique = True, max_length = 15)
 
@@ -23,7 +23,9 @@ class Aluno(models.Model):
 
     def __str__(self):
 
-        return f'{self.user.get_full_name()} — {self.matricula}'
+        return f'{self.usuario.get_full_name()} — {self.matricula}'
+    avatar = models.CharField('Avatar', max_length=10, default='🧑‍💻')
+    bio    = models.TextField('Bio', blank=True, default='')
 
 class Item(models.Model):
 
@@ -48,16 +50,27 @@ class Item(models.Model):
         ('outro', 'Outro'),
         
         ]
+    ICONE_CHOICES = [
+        ('fa-laptop', 'Eletrônicos/Notebook'),
+        ('fa-key', 'Chaves'),
+        ('fa-wallet', 'Carteira/Dinheiro'),
+        ('fa-book', 'Livros/Cadernos'),
+        ('fa-mobile-screen-button', 'Celular'),
+        ('fa-shirt', 'Roupas/Casacos'),
+        ('fa-glasses', 'Óculos'),
+        ('fa-backpack', 'Bolsas/Mochilas'),
+    ]
 
     nome = models.CharField('Nome do item encontrado', max_length = 50)
     descricao = models.TextField('Descrição do item encontrado')
     local = models.CharField('Local onde o item foi encontrado', max_length = 20, choices = LOCAL_ENCONTRADO)
     situacao_Item = models.CharField(max_length =20, choices = SITUACAO_ITEM)
-    status_Item = models.CharField(max_length = 20, choices = STATUS_ITEM)
+    status_Item = models.CharField(max_length=20, choices=STATUS_ITEM, default='ativo')
     foto = models.ImageField('Imagem do item encontrado', upload_to ='itens/' ,blank = True, null = True)
     data_encontro = models.DateField('Data em que o item foi encontrado')
     data_criacao = models.DateTimeField(auto_now_add = True)
-    
+    icone = models.CharField('Ícone do item', max_length = 50, choices = ICONE_CHOICES, default = 'fa-laptop')
+
     cadastrado_por = models.ForeignKey(
 
         User,
